@@ -20,7 +20,8 @@ orders_raw = [
     ("order_total", "float", [10.0, 32.3, 32.0, 140.0]),
 ]
 
-stores_raw = [("store_id", "int64", [1, 2, 3]), ("city", "string", ["NY", "LA", "NY"])]
+stores_raw = [("store_id", "int64", [1, 2, 3]),
+              ("city", "string", ["NY", "LA", "NY"])]
 
 customers_raw = [
     ("customer_id", "int64", [10, 11, 13]),
@@ -451,17 +452,9 @@ def test_order_by(consumer, request):
 @pytest.mark.parametrize(
     "consumer",
     [
-        pytest.param(
-            "acero_consumer",
-            marks=[
-                pytest.mark.xfail(pa.ArrowNotImplementedError, reason="Unimplemented")
-            ],
-        ),
+        "acero_consumer",
         "datafusion_consumer",
-        pytest.param(
-            "duckdb_consumer",
-            marks=[pytest.mark.xfail(Exception, reason="Unimplemented")],
-        ),
+        "duckdb_consumer",
     ],
 )
 def test_scalar_subquery(consumer, request):
@@ -472,7 +465,8 @@ def test_scalar_subquery(consumer, request):
 
         return orders.select(
             orders["fk_store_id"],
-            stores.aggregate(by=[], metrics=[stores["store_id"].max()]).as_scalar(),
+            stores.aggregate(
+                by=[], metrics=[stores["store_id"].max()]).as_scalar(),
         )
 
     ibis_expr = transform(ibis)
